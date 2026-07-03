@@ -1,25 +1,26 @@
-import { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/store';
 import { logout } from '@/store/slices/authSlice';
+import { ShoppingBag } from 'lucide-react';
+import { User, BookMarked, MessageSquare, LogOut } from 'lucide-react';
+
+// Impor komponen pecahan atomik yang sudah kita buat
+import { NavbarLogo, AuthButtons } from './navbar/NavbarComponents';
+import NavLinks from './navbar/NavLinks';
+import UserMenu from './navbar/UserMenu';
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); // State untuk mengontrol hamburger menu mobile
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const location = useLocation();
-
-  // Ambil status login dan data user dari Redux Store
   const { isAuthenticated, user } = useSelector(
     (state: RootState) => state.auth
   );
-
-  const navLinks = [
-    { name: 'Browse Books', href: '/books' },
-    { name: 'My Loans', href: '/my-loans' },
-    { name: 'Profile', href: '/profile' },
-  ];
+  const cartItems = useSelector((state: RootState) => state.cart.items);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -27,182 +28,131 @@ export default function Navbar() {
     navigate('/');
   };
 
-  const isActive = (path: string) => location.pathname === path;
+  // Menutup menu mobile otomatis jika pengguna mengklik di luar area menu
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
-    <nav className='border-b border-neutral-200 shadow-md sticky top-0 z-50 bg-base-background/80 backdrop-blur-md'>
-      <div className='custom-container h-20 flex items-center justify-between px-4'>
-        {/* LOGO BRAND */}
-        <Link to='/' className='flex items-center gap-2 cursor-pointer'>
-          <div className='h-8 w-8 rounded-lg bg-slate-400 flex items-center justify-center font-bold text-lg text-white'>
-            B
-          </div>
-          <span className='text-[32px] font-bold tracking-tighter text-neutral-900'>
-            Booky
-          </span>
-        </Link>
+    <nav className='border-b border-neutral-100 sticky top-0 z-50 bg-white/80 backdrop-blur-md'>
+      <div className='custom-container h-20 flex items-center justify-between px-6 max-w-7xl mx-auto relative'>
+        {/* LOGO */}
+        <NavbarLogo />
 
-        {/* NAVIGATION LINKS (Desktop) - Hanya muncul jika sudah login */}
-        {isAuthenticated && (
-          <div className='hidden md:flex items-center gap-6'>
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={link.href}
-                className={`text-md font-medium transition-colors hover:text-neutral-900 ${
-                  isActive(link.href)
-                    ? 'text-neutral-900 font-semibold'
-                    : 'text-neutral-500'
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
-            {user?.role === 'ADMIN' && (
-              <Link
-                to='/admin/dashboard'
-                className={`text-md font-medium text-amber-600 hover:text-amber-500 ${
-                  isActive('/admin/dashboard')
-                    ? 'underline underline-offset-4'
-                    : ''
-                }`}
-              >
-                Admin Panel
-              </Link>
-            )}
-          </div>
-        )}
+        {/* DESKTOP NAV LINKS */}
+        {isAuthenticated && <NavLinks />}
 
-        {/* TOMBOL AKSI UTAMA (Desktop) */}
-        <div className='hidden md:flex items-center gap-4'>
+        {/* DESKTOP PROFILE / AUTH BUTTONS */}
+        <div className='hidden md:flex items-center gap-5'>
           {isAuthenticated ? (
-            /* KONDISI 1: JIKA USER SUDAH LOGIN (Tampilan teks nama + tombol logout langsung) */
-            <div className='flex items-center gap-4'>
-              <div className='flex items-center gap-2 px-3 py-1.5 rounded-full border border-neutral-200 bg-neutral-50'>
-                <div className='h-6 w-6 rounded-full bg-primary-300 text-white flex items-center justify-center font-bold text-xs uppercase'>
-                  {user?.name?.substring(0, 2) || 'US'}
-                </div>
-                <span className='text-sm font-medium text-neutral-700 max-w-30 truncate'>
-                  Hi, {user?.name?.split(' ')[0]}
-                </span>
-              </div>
-
-              <button
-                onClick={handleLogout}
-                className='h-12 px-5 border border-destructive text-destructive rounded-full text-md font-medium tracking-wide transition-all hover:bg-destructive/5 active:scale-95 cursor-pointer'
-              >
-                Log Out
-              </button>
-            </div>
-          ) : (
-            /* KONDISI 2: JIKA USER BELUM LOGIN (Gunakan Link Komponen) */
             <>
-              <Link to='/login'>
-                <button className='w-40 h-12 border border-neutral-300 rounded-[100px] bg-transparent text-neutral-700 text-md font-medium tracking-wide transition-all active:scale-95 cursor-pointer px-4 py-2 hover:bg-neutral-50'>
-                  Login
-                </button>
+              {/* 💡 IKON KERANJANG BELANJA PREMIUM DENGAN BADGE COUNTER */}
+              <Link
+                to='/cart'
+                className='relative p-2.5 rounded-full hover:bg-neutral-50 border border-neutral-100 bg-white transition flex items-center justify-center text-neutral-700 hover:text-neutral-900 group cursor-pointer focus:outline-none select-none'
+              >
+                <ShoppingBag className='h-5 w-5' />
+
+                {/* Gelembung Penanda Jumlah Buku Aktif di Keranjang */}
+                {cartItems.length > 0 && (
+                  <span className='absolute -top-1 -right-1 h-5 w-5 rounded-full bg-blue-600 text-white font-extrabold text-[10px] flex items-center justify-center ring-4 ring-white animate-scale-in'>
+                    {cartItems.length}
+                  </span>
+                )}
               </Link>
 
-              <Link to='/register'>
-                <button className='w-40 h-12 px-4 py-2 text-md font-semibold text-white rounded-full bg-primary-300 hover:bg-primary-300/80 transition active:scale-95 cursor-pointer flex items-center justify-center'>
-                  Register
-                </button>
-              </Link>
+              {/* USER PROFILE DROPDOWN */}
+              <UserMenu user={user} onLogout={handleLogout} />
             </>
+          ) : (
+            <AuthButtons />
           )}
         </div>
 
-        {/* MOBILE MENU TOGGLE BUTTON */}
+        {/* MOBILE: HAMBURGER BUTTON */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className='md:hidden text-neutral-700 focus:outline-none p-1'
+          className='md:hidden text-neutral-800 focus:outline-none p-1 transition-transform active:scale-95 cursor-pointer'
         >
           <svg
-            className='h-6 w-6'
+            className='h-7 w-7'
             fill='none'
             viewBox='0 0 24 24'
             stroke='currentColor'
           >
-            {isOpen ? (
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M6 18L18 6M6 6l12 12'
-              />
-            ) : (
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M4 6h16M4 12h16M4 18h16'
-              />
-            )}
+            <path
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              strokeWidth={2}
+              d={isOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
+            />
           </svg>
         </button>
-      </div>
 
-      {/* MOBILE NAV DRAWER */}
-      {isOpen && (
-        <div className='md:hidden border-t border-neutral-200 bg-white px-6 py-4 space-y-3 shadow-inner'>
-          {isAuthenticated ? (
-            /* Mobile Links jika sudah login */
-            <>
-              <div className='text-sm font-semibold text-neutral-500 pb-1 border-b border-neutral-100'>
-                Logged in as:{' '}
-                <span className='text-neutral-800'>{user?.name}</span>
+        {/* 💡 MOBILE MENU DRAWER: BERBENTUK KARTU FLOATING (PERSIS SESUAI GAMBAR CONTOH) */}
+        {isOpen && (
+          <div
+            ref={mobileMenuRef}
+            className='absolute top-18  w-full bg-white border border-neutral-100 rounded-[24px] shadow-[0_15px_35px_rgba(0,0,0,0.1)] p-3 flex flex-col space-y-1 animate-fade-in md:hidden z-50'
+          >
+            {isAuthenticated ? (
+              /* KONDISI 1: MOBILE MENU JIKA USER SUDAH LOGIN */
+              <>
+                <Link
+                  to='/profile'
+                  onClick={() => setIsOpen(false)}
+                  className='flex items-center gap-3 px-4 py-3.5 text-[15px] font-bold text-neutral-800 hover:bg-neutral-50 rounded-[16px] transition'
+                >
+                  <User className='h-4 w-4 Lech text-neutral-400' />
+                  Profile
+                </Link>
+
+                <Link
+                  to='/my-loans'
+                  onClick={() => setIsOpen(false)}
+                  className='flex items-center gap-3 px-4 py-3.5 text-[15px] font-bold text-neutral-800 hover:bg-neutral-50 rounded-[16px] transition'
+                >
+                  <BookMarked className='h-4 w-4 text-neutral-400' />
+                  Borrowed List
+                </Link>
+
+                <Link
+                  to='/reviews'
+                  onClick={() => setIsOpen(false)}
+                  className='flex items-center gap-3 px-4 py-3.5 text-[15px] font-bold text-neutral-800 hover:bg-neutral-50 rounded-[16px] transition'
+                >
+                  <MessageSquare className='h-4 w-4 text-neutral-400' />
+                  Reviews
+                </Link>
+
+                <div className='h-px bg-neutral-100/70 my-1 mx-2' />
+
+                <button
+                  onClick={handleLogout}
+                  className='w-full flex items-center gap-3 px-4 py-3.5 text-[15px] font-bold text-[#F43F5E] hover:bg-rose-50/50 rounded-[16px] transition text-left cursor-pointer'
+                >
+                  <LogOut className='h-4 w-4' />
+                  Logout
+                </button>
+              </>
+            ) : (
+              /* KONDISI 2: MOBILE MENU JIKA USER BELUM LOGIN */
+              <div className='flex flex-col gap-2 p-1'>
+                <AuthButtons onActionClick={() => setIsOpen(false)} />
               </div>
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className={`block transition text-sm py-1 ${isActive(link.href) ? 'text-neutral-900 font-bold' : 'text-neutral-600'}`}
-                >
-                  {link.name}
-                </Link>
-              ))}
-              {user?.role === 'ADMIN' && (
-                <Link
-                  to='/admin/dashboard'
-                  onClick={() => setIsOpen(false)}
-                  className='block text-amber-600 text-sm py-1 font-medium'
-                >
-                  Admin Panel
-                </Link>
-              )}
-              <button
-                onClick={handleLogout}
-                className='w-full mt-4 px-4 py-2 text-sm font-semibold rounded-full bg-destructive text-white text-center cursor-pointer'
-              >
-                Log Out
-              </button>
-            </>
-          ) : (
-            /* Mobile Links jika belum login */
-            <div className='flex flex-col gap-2 pt-2'>
-              <Link
-                to='/login'
-                onClick={() => setIsOpen(false)}
-                className='w-full'
-              >
-                <button className='w-full h-11 border border-neutral-300 rounded-full text-sm font-medium text-neutral-700'>
-                  Login
-                </button>
-              </Link>
-              <Link
-                to='/register'
-                onClick={() => setIsOpen(false)}
-                className='w-full'
-              >
-                <button className='w-full h-11 bg-primary-300 text-white rounded-full text-sm font-semibold'>
-                  Register
-                </button>
-              </Link>
-            </div>
-          )}
-        </div>
-      )}
+            )}
+          </div>
+        )}
+      </div>
     </nav>
   );
 }
