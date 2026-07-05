@@ -6,9 +6,6 @@ import { loginSuccess, UserData } from '@/store/slices/authSlice';
 import { AxiosError } from 'axios';
 import { toast } from 'sonner';
 
-// ==========================================
-// TIPE DATA & HOOK UNTUK REGISTRASI
-// ==========================================
 export interface RegisterPayload {
   name: string;
   email: string;
@@ -40,9 +37,6 @@ export const useRegisterMutation = () => {
   });
 };
 
-// ==========================================
-// TIPE DATA & HOOK UNTUK LOGIN (PASTIKAN ADA KATA EXPORT)
-// ==========================================
 export interface LoginPayload {
   email: string;
   password: string;
@@ -75,7 +69,7 @@ export const useLoginMutation = () => {
       const { token, user } = responseBody.data;
       dispatch(loginSuccess({ token, user }));
       toast.success(`Welcome back, ${user.name}!`);
-      navigate(user.role === 'ADMIN' ? '/admin/dashboard' : '/books');
+      navigate(user.role === 'ADMIN' ? '/admin/dashboard' : '/');
     },
     onError: (error: AxiosError<ApiErrorData>) => {
       const errorMessage =
