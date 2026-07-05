@@ -1,13 +1,10 @@
-// import { useState } from "react";
 import { useSearchParams } from 'react-router-dom';
-import MyLoans from '@/features/loans/MyLoans';
-// Sediakan placeholder atau impor komponen jika sudah ada
+import BorrowedListTab from '@/features/profile/BorrowedListTab';
 import EditProfileForm from '@/features/profile/EditProfileForm';
 
 export default function UserProfilePage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Mengambil tab aktif dari URL (?tab=profile/borrowed/reviews), default ke 'borrowed' sesuai gambar
   const activeTab = searchParams.get('tab') || 'borrowed';
 
   const tabs = [
@@ -22,9 +19,8 @@ export default function UserProfilePage() {
   };
 
   return (
-    <div className='w-full space-y-8 animate-fade-in pb-12'>
-      {/* 💡 CONTAINER TAB KAPSUL MELAYANG (PERSIS SESUAI GAMBAR REFERENSI) */}
-      <div className='flex justify-center w-full max-w-2xl mx-auto pt-2'>
+    <div className='w-full space-y-8 animate-fade-in pb-12 px-4'>
+      <div className='flex justify-center w-full max-w-2xl pt-2'>
         <div className='flex items-center w-full bg-[#F4F4F5] border border-neutral-200/50 rounded-full p-1.5 shadow-sm'>
           {tabs.map((tab) => {
             const isSelected = activeTab === tab.id;
@@ -45,19 +41,14 @@ export default function UserProfilePage() {
         </div>
       </div>
 
-      {/* AREA KONTEN UTAMA YANG REAKTIF SESUAI TAB YANG DIKLIK */}
       <div className='w-full transition-all duration-300'>
         {activeTab === 'profile' && (
           <div className='p-6 bg-white border border-neutral-100 rounded-[24px] shadow-sm'>
-            {/* Panggil form edit profile Anda di sini */}
             <EditProfileForm />
           </div>
         )}
 
-        {activeTab === 'borrowed' && (
-          /* Memanggil kembali komponen MyLoans modular yang sudah selesai kemarin */
-          <MyLoans />
-        )}
+        {activeTab === 'borrowed' && <BorrowedListTab />}
 
         {activeTab === 'reviews' && (
           <div className='p-6 bg-white border border-neutral-100 rounded-[24px] shadow-sm'>
