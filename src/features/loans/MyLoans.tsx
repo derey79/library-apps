@@ -7,22 +7,10 @@ import { Loader2, Inbox } from 'lucide-react';
 
 import LoansHeader from './LoansHeader';
 import LoansTabs from './LoansTabs';
-import LoanRow, { LoanRecord } from './LoanRow';
+import LoanRow from './LoanRow';
 import LoansPagination from './LoansPagination';
 
-interface LoansApiResponse {
-  success: boolean;
-  message: string;
-  data: {
-    loans: LoanRecord[];
-    pagination: {
-      totalItems: number;
-      totalPages: number;
-      currentPage: number;
-      limit: number;
-    };
-  };
-}
+import { LoansApiResponse } from '@/types/types';
 
 export default function MyLoans() {
   const { token } = useSelector((state: RootState) => state.auth);
