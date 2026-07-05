@@ -5,7 +5,6 @@ interface LoanStatusBadgeProps {
 export default function LoanStatusBadge({ status }: LoanStatusBadgeProps) {
   const normStatus = status.toLowerCase().trim();
 
-  // Pola pewarnaan badge yang tegas namun lembut (pastelmatt design)
   if (normStatus === 'borrowed' || normStatus === 'active') {
     return (
       <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/10 text-blue-600 border border-blue-500/20'>
