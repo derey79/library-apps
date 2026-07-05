@@ -6,21 +6,9 @@ import axiosInstance from '@/api/axiosInstance';
 import { Loader2, Search, Inbox } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
-import LoanItemCard, {
-  SharedLoanNode,
-} from '@/features/loans/components/LoanItemCard';
+import LoanItemCard from '@/features/loans/components/LoanItemCard';
 
-interface AdminLoansApiResponse {
-  data: {
-    loans: SharedLoanNode[];
-    pagination: {
-      totalItems: number;
-      totalPages: number;
-      currentPage: number;
-      limit: number;
-    };
-  };
-}
+import { AdminLoansApiResponse } from '@/types/types';
 
 export default function AdminBorrowedList() {
   const { token } = useSelector((state: RootState) => state.auth);
