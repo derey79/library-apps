@@ -1,22 +1,6 @@
 import { BookOpen, Calendar, Clock } from 'lucide-react';
 import LoanStatusBadge from './LoanStatusBadge';
-
-export interface LoanRecord {
-  id: number;
-  loanDate: string;
-  dueDate: string;
-  returnDate: string | null;
-  status: 'BORROWED' | 'RETURNED' | 'OVERDUE';
-  book: {
-    title: string;
-    coverImage: string;
-    author: { name: string };
-  };
-}
-
-interface LoanRowProps {
-  record: LoanRecord;
-}
+import { LoanRowProps } from '@/types/types';
 
 export default function LoanRow({ record }: LoanRowProps) {
   const formatDate = (dateString: string) => {
@@ -28,10 +12,9 @@ export default function LoanRow({ record }: LoanRowProps) {
   };
 
   return (
-    <div className='w-full bg-white border border-neutral-100 p-4 rounded-[22px] shadow-sm hover:shadow-md transition duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4'>
-      {/* KIRI: COVER & DATA BUKU */}
+    <div className='w-full border border-neutral-100 p-4 rounded-[22px] shadow-sm hover:shadow-md transition duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4'>
       <div className='flex items-center gap-4 w-full sm:max-w-[60%]'>
-        <div className='h-20 w-14 rounded-lg bg-neutral-100 border border-neutral-200/60 overflow-hidden flex-shrink-0 shadow-inner flex items-center justify-center'>
+        <div className='h-20 w-14 rounded-lg bg-neutral-100 border border-neutral-200/60 overflow-hidden shrink-0 shadow-inner flex items-center justify-center'>
           {record.book?.coverImage ? (
             <img
               src={record.book.coverImage}
