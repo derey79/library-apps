@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import logo from '@/assets/logo-booky.png';
 import { Link } from 'react-router-dom';
 import { useLoginMutation, LoginPayload } from '../hooks/useAuthMutation';
 
 // UI Components Dasar dari Shadcn/ui
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label'; // 💡 Menggunakan Label langsung
+import { Label } from '@/components/ui/label';
 import {
   Card,
   CardContent,
@@ -18,7 +19,7 @@ import {
 } from '@/components/ui/card';
 
 // Icons
-import { Loader2, Mail, Lock, Eye, EyeOff, Library } from 'lucide-react';
+import { Loader2, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 
 // Skema Validasi Zod
 const loginSchema = z.object({
@@ -52,21 +53,24 @@ export const LoginForm = () => {
 
   return (
     <div className='flex min-h-[80vh] flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8'>
-      {/* Mini Brand Header */}
-      <div className='mb-6 flex flex-col items-center space-y-2 text-center'>
-        <div className='flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary'>
-          <Library className='h-6 w-6' />
-        </div>
-        <h1 className='text-xl font-bold tracking-tight'>E-Library Platform</h1>
-      </div>
-
       <Card className='w-full max-w-md border-muted/60 shadow-xl backdrop-blur-sm bg-card/95'>
-        <CardHeader className='space-y-1.5 px-6 pt-6 text-center'>
-          <CardTitle className='text-2xl font-bold tracking-tight'>
-            Welcome back
+        <CardHeader className='space-y-1.5 px-6 pt-6 text-left'>
+          <div className='flex items-center gap-3 pb-4'>
+            <img
+              src={logo}
+              alt='Company Logo'
+              className='h-full w-auto object-contain'
+            />
+            <span className='text-2xl font-bold tracking-tighter space-y-6 text-main-color whitespace-nowrap select-none'>
+              Booky
+            </span>
+          </div>
+
+          <CardTitle className='text-2xl font-quicksand font-bold tracking-tight'>
+            Login
           </CardTitle>
           <CardDescription>
-            Enter your credentials to access your library account
+            Sign in to manage your library account.
           </CardDescription>
         </CardHeader>
 
@@ -79,7 +83,7 @@ export const LoginForm = () => {
                 htmlFor='email'
                 className={errors.email ? 'text-destructive' : ''}
               >
-                Email Address
+                Email
               </Label>
               <div className='relative flex items-center'>
                 <Mail className='absolute left-3 h-4 w-4 text-muted-foreground pointer-events-none' />
@@ -89,7 +93,7 @@ export const LoginForm = () => {
                   placeholder='name@company.com'
                   className={`pl-10 h-10 transition-all ${errors.email ? 'border-destructive focus-visible:ring-destructive' : 'focus-visible:ring-primary/50'}`}
                   disabled={isPending}
-                  {...register('email')} // 💡 Registrasi hook form langsung ke input element
+                  {...register('email')}
                 />
               </div>
               {errors.email && (
@@ -99,7 +103,6 @@ export const LoginForm = () => {
               )}
             </div>
 
-            {/* FIELD PASSWORD */}
             <div className='space-y-2'>
               <div className='flex items-center justify-between'>
                 <Label
@@ -108,12 +111,6 @@ export const LoginForm = () => {
                 >
                   Password
                 </Label>
-                <Link
-                  to='/forgot-password'
-                  className='text-xs font-medium text-primary hover:underline'
-                >
-                  Forgot password?
-                </Link>
               </div>
               <div className='relative flex items-center'>
                 <Lock className='absolute left-3 h-4 w-4 text-muted-foreground pointer-events-none' />
@@ -147,10 +144,9 @@ export const LoginForm = () => {
               )}
             </div>
 
-            {/* BUTTON SUBMIT */}
             <Button
               type='submit'
-              className='w-full h-10 font-medium tracking-wide shadow-md mt-2'
+              className='w-full h-10 font-medium rounded-full bg-primary-300 hover:bg-primary-300/70 tracking-wide shadow-md mt-2'
               disabled={isPending}
             >
               {isPending ? (
@@ -165,12 +161,12 @@ export const LoginForm = () => {
           </form>
 
           <div className='mt-5 text-center text-sm text-muted-foreground'>
-            Don't have an account yet?{' '}
+            Don't have an account?{' '}
             <Link
               to='/register'
               className='font-semibold text-primary hover:underline underline-offset-4'
             >
-              Sign up for free
+              Register
             </Link>
           </div>
         </CardContent>
