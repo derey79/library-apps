@@ -25,17 +25,22 @@ export default function BookReviews({ reviews }: BookReviewsProps) {
 
   const reviewsList = Array.isArray(reviews) ? reviews : [];
 
-  // 💡 POTONGAN ARRAY: Jika tidak di-expand, hanya tampilkan 6 ulasan pertama (3 baris desktop)
   const displayedReviews = isExpanded ? reviewsList : reviewsList.slice(0, 6);
 
   return (
-    <div className='pt-8 border-t border-neutral-100 space-y-6'>
-      {/* JUDUL SECTION */}
+    <div className='pt-8 border-t border-neutral-100 space-y-6 px-4'>
       <div className='flex items-center gap-2'>
-        <MessageSquare className='h-5 w-5 text-neutral-700' />
-        <h2 className='text-lg font-bold text-neutral-950 tracking-tight'>
-          User Reviews ({reviewsList.length})
+        <MessageSquare className='h-8 w-8 text-neutral-700' />
+        <h2 className='text-2xl md:text-3xl font-bold text-neutral-950 tracking-tight'>
+          Reviews
         </h2>
+      </div>
+      <div className='flex items-center gap-1'>
+        <Star className='h-3.5 w-3.5 text-amber-400 fill-amber-400' />
+        <span className='text-md md:text-lg text-zinc-200 font-bold'></span>
+        <span className='text-md md:text-lg text-zinc-500'>
+          ({reviewsList.length} Ulasan)
+        </span>
       </div>
 
       {/* KONDISI JIKA TIDAK ADA ULASAN */}
@@ -83,7 +88,7 @@ export default function BookReviews({ reviews }: BookReviewsProps) {
                       </div>
                     </div>
                     {/* Isi Komentar */}
-                    <p className='text-xs text-neutral-500 font-normal leading-relaxed whitespace-pre-line pl-0.5'>
+                    <p className='text-xs md:text-md text-neutral-500 font-semibold leading-relaxed whitespace-pre-line pl-0.5'>
                       {review.comment}
                     </p>
                   </div>
