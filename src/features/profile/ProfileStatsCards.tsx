@@ -6,29 +6,19 @@ import {
   BarChart3,
 } from 'lucide-react';
 
-interface LoanStats {
-  borrowed: number;
-  late: number;
-  returned: number;
-  total: number;
-}
-
-interface ProfileStatsCardsProps {
-  stats?: LoanStats;
-}
+import { ProfileStatsCardsProps } from '@/types/types';
 
 export default function ProfileStatsCards({ stats }: ProfileStatsCardsProps) {
   return (
-    <div className='space-y-3'>
+    <div className='space-y-3 max-w-2xl'>
       <div className='flex items-center gap-2 text-neutral-800'>
         <BarChart3 className='h-4 w-4 text-neutral-500' />
         <h3 className='text-sm font-bold uppercase tracking-wider text-neutral-500'>
-          Workspace Statistics
+          Loan Statistics
         </h3>
       </div>
 
       <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
-        {/* Kartu Buku Aktif Dipinjam */}
         <div className='p-4 bg-white border border-neutral-100 rounded-[20px] shadow-sm flex items-center gap-3.5'>
           <div className='h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600 shrink-0'>
             <BookOpen className='h-5 w-5' />
@@ -43,7 +33,6 @@ export default function ProfileStatsCards({ stats }: ProfileStatsCardsProps) {
           </div>
         </div>
 
-        {/* Kartu Terlambat (Overdue) */}
         <div className='p-4 bg-white border border-neutral-100 rounded-[20px] shadow-sm flex items-center gap-3.5'>
           <div
             className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${
@@ -64,7 +53,6 @@ export default function ProfileStatsCards({ stats }: ProfileStatsCardsProps) {
           </div>
         </div>
 
-        {/* Kartu Berhasil Dikembalikan */}
         <div className='p-4 bg-white border border-neutral-100 rounded-[20px] shadow-sm flex items-center gap-3.5'>
           <div className='h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 shrink-0'>
             <CheckCircle className='h-5 w-5' />
@@ -79,7 +67,6 @@ export default function ProfileStatsCards({ stats }: ProfileStatsCardsProps) {
           </div>
         </div>
 
-        {/* Kartu Total Semua Transaksi */}
         <div className='p-4 bg-white border border-neutral-100 rounded-[20px] shadow-sm flex items-center gap-3.5'>
           <div className='h-10 w-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-600 shrink-0'>
             <User className='h-5 w-5' />

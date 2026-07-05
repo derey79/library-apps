@@ -1,15 +1,15 @@
 import { User, Phone, Mail, Shield, Save, Loader2 } from 'lucide-react';
+import { ProfileFormFieldsProps } from '@/types/types';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
-interface ProfileFormFieldsProps {
-  name: string;
-  phone: string;
-  email: string;
-  role: string;
-  isPending: boolean;
-  onNameChange: (val: string) => void;
-  onPhoneChange: (val: string) => void;
-  onSubmit: (e: React.FormEvent) => void;
-}
+const LABEL_STYLE =
+  'text-xs font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5';
+const INPUT_EDITABLE_STYLE =
+  'w-full h-11 px-4 border border-neutral-200 rounded-xl text-sm font-semibold text-neutral-800 bg-white focus:ring-4 focus:ring-neutral-500/5 transition-all';
+const INPUT_READONLY_STYLE =
+  'w-full h-11 px-4 border border-neutral-200 rounded-xl bg-neutral-50 text-sm font-semibold text-neutral-400 cursor-not-allowed select-none';
 
 export default function ProfileFormFields({
   name,
@@ -23,77 +23,65 @@ export default function ProfileFormFields({
 }: ProfileFormFieldsProps) {
   return (
     <div className='grid grid-cols-1 md:grid-cols-3 gap-8 items-start'>
-      {/* Deskripsi Samping */}
-      <div className='space-y-1'>
-        <h2 className='text-lg font-bold text-neutral-950 tracking-tight'>
-          Account Parameters
-        </h2>
-        <p className='text-xs text-neutral-400 font-medium leading-relaxed max-w-xs'>
-          Review your systemic library credentials. Email and systemic security
-          authorization authorities are locked by root parameters.
-        </p>
-      </div>
-
-      {/* Input Form Fields */}
       <form
         onSubmit={onSubmit}
         className='md:col-span-2 space-y-4 max-w-xl w-full'
       >
-        {/* Field 1: Full Name */}
+        {/* Full Name */}
         <div className='space-y-1.5'>
-          <label className='text-xs font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5'>
+          <Label className={LABEL_STYLE}>
             <User className='h-3.5 w-3.5' /> Full Name
-          </label>
-          <input
+          </Label>
+          <Input
             type='text'
             value={name}
             onChange={(e) => onNameChange(e.target.value)}
-            className='w-full h-11 px-4 border border-neutral-200 rounded-xl text-sm font-semibold text-neutral-800 bg-white focus:outline-none focus:border-neutral-300 focus:ring-4 focus:ring-neutral-500/5 transition-all'
+            className={INPUT_EDITABLE_STYLE}
           />
         </div>
 
-        {/* Field 2: Phone Number */}
+        {/* Phone Number */}
         <div className='space-y-1.5'>
-          <label className='text-xs font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5'>
+          <Label className={LABEL_STYLE}>
             <Phone className='h-3.5 w-3.5' /> Phone Number
-          </label>
-          <input
+          </Label>
+          <Input
             type='text'
             value={phone}
             onChange={(e) => onPhoneChange(e.target.value)}
-            className='w-full h-11 px-4 border border-neutral-200 rounded-xl text-sm font-semibold text-neutral-800 bg-white focus:outline-none focus:border-neutral-300 focus:ring-4 focus:ring-neutral-500/5 transition-all'
+            className={INPUT_EDITABLE_STYLE}
           />
         </div>
 
-        {/* Field 3: Email (READONLY) */}
+        {/* Email (readonly) */}
         <div className='space-y-1.5'>
-          <label className='text-xs font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5'>
+          <Label className={LABEL_STYLE}>
             <Mail className='h-3.5 w-3.5' /> Email Address
-          </label>
-          <input
+          </Label>
+          <Input
             type='text'
             disabled
             value={email}
-            className='w-full h-11 px-4 border border-neutral-200 rounded-xl bg-neutral-50 text-sm font-semibold text-neutral-400 cursor-not-allowed select-none focus:outline-none'
+            className={INPUT_READONLY_STYLE}
           />
         </div>
 
-        {/* Field 4: Authority Role (READONLY) */}
         <div className='space-y-1.5'>
-          <label className='text-xs font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5'>
+          <Label className={LABEL_STYLE}>
             <Shield className='h-3.5 w-3.5' /> Role Authority
-          </label>
-          <input
+          </Label>
+          <Input
             type='text'
             disabled
             value={role}
-            className='w-full h-11 px-4 border border-neutral-200 rounded-xl bg-neutral-50 text-sm font-bold text-neutral-400 uppercase cursor-not-allowed select-none focus:outline-none tracking-wider'
+            className={`${INPUT_READONLY_STYLE} font-bold uppercase tracking-wider`}
           />
         </div>
 
         {/* Tombol Simpan */}
         <div className='pt-2 flex justify-end'>
-          <button
+          {/* ✅ PERBAIKAN: Menggunakan komponen UI <Button> bawaan shadcn */}
+          <Button
             type='submit'
             disabled={isPending}
             className='h-11 px-6 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold tracking-wide transition shadow-md disabled:bg-neutral-400 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2 focus:outline-none'
@@ -104,7 +92,7 @@ export default function ProfileFormFields({
               <Save className='h-3.5 w-3.5' />
             )}
             <span>Save Changes</span>
-          </button>
+          </Button>
         </div>
       </form>
     </div>

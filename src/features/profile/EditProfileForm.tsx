@@ -10,47 +10,16 @@ import { updateUser } from '@/store/slices/authSlice';
 
 import ProfileStatsCards from './ProfileStatsCards';
 import ProfileFormFields from './ProfileFormFields';
-
-interface UserProfile {
-  id: number;
-  name: string;
-  email: string;
-  phone: string | null;
-  role: string;
-  createdAt: string;
-}
-
-interface LoanStats {
-  borrowed: number;
-  late: number;
-  returned: number;
-  total: number;
-}
-
-interface MeApiResponse {
-  success: boolean;
-  message: string;
-  data: {
-    profile: UserProfile;
-    loanStats: LoanStats;
-    reviewsCount: number;
-  };
-}
-
-interface ApiErrorData {
-  message?: string;
-}
+import { MeApiResponse, ApiErrorData } from '@/types/types';
 
 export default function EditProfileForm() {
   const { token } = useSelector((state: RootState) => state.auth);
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
 
-  // 💡 HANYA gunakan 2 state teks murni ini. Bebas dari masalah variabel gambar terbuang
   const [name, setName] = useState<string | null>(null);
   const [phone, setPhone] = useState<string | null>(null);
 
-  // FETCH DATA PROFIL (GET /me)
   const { data, isLoading, isError } = useQuery<MeApiResponse>({
     queryKey: ['currentUserProfile'],
     queryFn: async () => {
@@ -67,7 +36,6 @@ export default function EditProfileForm() {
   const activeName = name !== null ? name : profile?.name || '';
   const activePhone = phone !== null ? phone : profile?.phone || '';
 
-  // MUTASI PATCH /me (Hanya mengirimkan objek data teks murni)
   const updateProfileMutation = useMutation<
     unknown,
     AxiosError<ApiErrorData>,
@@ -90,7 +58,6 @@ export default function EditProfileForm() {
       toast.success('Profile parameters synchronized successfully.');
       queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
     },
-    // 💡 PERBAIKAN: Gunakan AxiosError<ApiErrorData> agar serasi dengan deklarasi mutasi di atas
     onError: (error: AxiosError<ApiErrorData>) => {
       const errorMessage =
         error.response?.data?.message ||
@@ -133,7 +100,7 @@ export default function EditProfileForm() {
     <div className='space-y-8 animate-fade-in text-neutral-800'>
       <ProfileStatsCards stats={stats} />
 
-      <div className='h-[1px] bg-neutral-100 w-full' />
+      <div className='h-1 bg-neutral-100 w-full' />
 
       <ProfileFormFields
         name={activeName}
