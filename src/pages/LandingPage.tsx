@@ -18,10 +18,10 @@ export default function LandingPage() {
 
       <BookGrid selectedCategoryId={selectedCategoryId} />
       <PopularAuthors />
-      <div className='p-8 rounded-2xl bg-neutral-200/40 border border-zinc-800 text-center'>
+      <div className='p-8 rounded-2xl border border-zinc-800/45 text-center'>
         <p className='text-zinc-400 text-sm font-medium'>
-          Please <span className='text-primary font-semibold'>Sign In</span> to
-          browse our complete collection and start borrowing books.
+          Discover inspiring stories & timeless knowledge, ready to borrow
+          anytime. Explore online or visit our nearest library branch.
         </p>
       </div>
     </div>
