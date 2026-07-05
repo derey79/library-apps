@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default defineConfig({
-  root: process.cwd(), // 💡 Force runtime engine root evaluation
+  root: process.cwd(),
   plugins: [
     react(),
     babel({ presets: [reactCompilerPreset()] }),
@@ -20,19 +20,18 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  // 🧠 TAMBAHKAN BLOK BUILD INI DI SINI
+  // 🛠️ PERBAIKAN UTAMA: Menggunakan rollupOptions standar untuk stabilitas Vercel
   build: {
-    rolldownOptions: {
+    minify: true, // Mengaktifkan kompresi kode maksimal
+    sourcemap: false, // Matikan sourcemap untuk mencegah kegagalan visual node sync di Vercel
+    rollupOptions: {
+      // ✅ Menggunakan Rollup standar (bukan rolldownOptions)
       output: {
-        codeSplitting: {
-          minSize: 20000, // Mulai memecah otomatis untuk file di atas 20KB
-          groups: [
-            {
-              name: 'vendor',
-              test: /node_modules/, // Memisahkan seluruh library pihak ketiga ke chunk terpisah
-              priority: 10,
-            },
-          ],
+        manualChunks(id) {
+          // Memisahkan otomatis seluruh library node_modules ke file 'vendor.js'
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
         },
       },
     },
