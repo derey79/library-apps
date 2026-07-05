@@ -20,4 +20,21 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  // 🧠 TAMBAHKAN BLOK BUILD INI DI SINI
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          minSize: 20000, // Mulai memecah otomatis untuk file di atas 20KB
+          groups: [
+            {
+              name: 'vendor',
+              test: /node_modules/, // Memisahkan seluruh library pihak ketiga ke chunk terpisah
+              priority: 10,
+            },
+          ],
+        },
+      },
+    },
+  },
 });
