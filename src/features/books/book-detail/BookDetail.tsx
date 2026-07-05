@@ -128,13 +128,12 @@ export default function BookDetail() {
 
       {/* 2. Main Detail Layout */}
       <div className='grid grid-cols-1 md:grid-cols-12 gap-8 pt-2'>
-        {/* Sampul Buku (Kolom Kiri) */}
         <div className='md:col-span-4 flex justify-center items-start'>
-          <div className='w-full max-w-75 md:max-w-none bg-white p-4 rounded-[24px] shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-neutral-100 flex items-center justify-center aspect-3/4 overflow-hidden'>
+          <div className='w-full max-w-75 md:max-w-none bg-neutral-200 p-2 shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-neutral-100 flex items-center justify-center aspect-3/4 overflow-hidden'>
             <img
               src={book.coverImage}
               alt={book.title}
-              className='w-full h-full object-cover rounded-[16px] shadow-sm'
+              className='w-full h-full object-cover shadow-sm'
             />
           </div>
         </div>
