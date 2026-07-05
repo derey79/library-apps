@@ -86,13 +86,13 @@ export default function BookInfo({
   if (!book) return null;
 
   return (
-    <div className='md:col-span-8 flex flex-col space-y-6'>
+    <div className='md:col-span-8 flex flex-col space-y-6 px-4'>
       {/* 1. Badge Kategori & Judul Utama */}
       <div className='space-y-2 text-left'>
-        <span className='inline-block px-3 py-1 bg-neutral-50 border border-neutral-200 text-neutral-600 rounded-md text-xs font-semibold'>
+        <span className='inline-block px-3 py-1 border border-neutral-200 text-neutral-600 rounded-md text-sm font-semibold'>
           {book.category?.name || 'General Archive'}
         </span>
-        <h1 className='text-2xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 leading-tight'>
+        <h1 className='text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950 leading-tight'>
           {book.title || 'Loading Title...'}
         </h1>
         <p className='text-md font-semibold text-neutral-500'>
