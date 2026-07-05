@@ -1,68 +1,83 @@
+import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
 import Layout from '@/components/shared/Layout';
+import { Loader2 } from 'lucide-react';
 
-// Import Komponen Halaman & Fitur
-import LandingPage from '@/pages/LandingPage';
-import { LoginForm } from '@/features/auth/components/LoginForm';
-import { RegisterForm } from '@/features/auth/components/RegisterForm';
+// 💡 1. Gunakan React.lazy untuk memecah halaman menjadi chunk dinamis
+const LandingPage = React.lazy(() => import('@/pages/LandingPage'));
+const LoginForm = React.lazy(() =>
+  import('@/features/auth/components/LoginForm').then((module) => ({
+    default: module.LoginForm,
+  }))
+);
+const RegisterForm = React.lazy(() =>
+  import('@/features/auth/components/RegisterForm').then((module) => ({
+    default: module.RegisterForm,
+  }))
+);
+const AdminDashboardPage = React.lazy(
+  () => import('@/pages/AdminDashboardPage')
+);
+const UserProfilePage = React.lazy(() => import('@/pages/UserProfilePage'));
+const BookDetail = React.lazy(
+  () => import('@/features/books/book-detail/BookDetail')
+);
+const CartPage = React.lazy(() => import('@/pages/CartPage'));
+const AddBookPage = React.lazy(() => import('@/pages/AddBookPage'));
+const BookListCatalog = React.lazy(
+  () => import('@/features/books/components/BookListCatalog')
+);
+const CheckoutPage = React.lazy(() => import('@/pages/CheckoutPage'));
 
-// import AdminDashboard from '@/features/admin/components/AdminDashboard';
-import AdminDashboardPage from '@/pages/AdminDashboardPage';
-import UserProfilePage from '@/pages/UserProfilePage';
-import BookDetail from '@/features/books/book-detail/BookDetail';
-// import MyLoans from '@/features/loans/MyLoans';
-import CartPage from '@/pages/CartPage';
-import AddBookPage from '@/pages/AddBookPage';
-import BookListCatalog from '@/features/books/components/BookListCatalog';
-import CheckoutPage from '@/pages/CheckoutPage';
+// 💡 2. Komponen Loading Spinner indikator transisi antar halaman
+const PageLoader = () => (
+  <div className='flex h-screen w-screen flex-col items-center justify-center bg-white gap-2'>
+    <Loader2 className='h-8 w-8 animate-spin text-blue-600' />
+    <span className='text-sm font-medium text-neutral-500'>
+      Memuat halaman...
+    </span>
+  </div>
+);
 
 const AppRoutes = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* === KELOMPOK 1: HALAMAN UTAMA PUBLIK (MENGGUNAKAN LAYOUT) === */}
-        <Route element={<Layout />}>
-          {/* Akses beranda tetap memunculkan Navbar & Hero Section */}
-          <Route path='/' element={<LandingPage />} />
-          <Route path='/books' element={<BookListCatalog />} />
-          <Route path='/books/:id' element={<BookDetail />} />
-        </Route>
-
-        {/* === KELOMPOK 2: AUTH PUBLIK (TANPA LAYOUT / FULL SCREEN) === */}
-        {/* 💡 Sengaja dikeluarkan dari bungkusan Layout agar tampilan bersih 100% */}
-        <Route path='/login' element={<LoginForm />} />
-        <Route path='/register' element={<RegisterForm />} />
-
-        {/* === KELOMPOK 3: INTERNAL USER TERPROTEKSI (MENGGUNAKAN LAYOUT) === */}
-        <Route element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']} />}>
+      {/* 💡 3. Bungkus seluruh rute di dalam Suspense */}
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          {/* === KELOMPOK 1: HALAMAN UTAMA PUBLIK (MENGGUNAKAN LAYOUT) === */}
           <Route element={<Layout />}>
-            {/* Halaman katalog internal setelah user berhasil masuk */}
-            {/* <Route path='/books' element={<LandingPage />} /> */}
             <Route path='/' element={<LandingPage />} />
-            {/* Anda bisa menambahkan rute internal lain di sini seperti /my-loans atau /profile */}
-            <Route path='/profile' element={<UserProfilePage />} />
-            <Route path='/cart' element={<CartPage />} />
-
-            <Route path='/checkout' element={<CheckoutPage />} />
-            {/* <Route path='/my-loans' element={<MyLoans />} /> */}
-            <Route
-              path='/profile'
-              element={<div>Halaman Profil (Under Construction)</div>}
-            />
+            <Route path='/books' element={<BookListCatalog />} />
+            <Route path='/books/:id' element={<BookDetail />} />
           </Route>
-        </Route>
 
-        {/* === KELOMPOK 4: PANEL ADMIN TERPROTEKSI (MANDIRI / FULL SCREEN) === */}
-        <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
-          {/* <Route path='/admin/dashboard' element={<AdminDashboard />} /> */}
-          <Route path='/admin/dashboard' element={<AdminDashboardPage />} />
-          <Route path='/admin/books/add' element={<AddBookPage />} />
-        </Route>
+          {/* === KELOMPOK 2: AUTH PUBLIK (TANPA LAYOUT / FULL SCREEN) === */}
+          <Route path='/login' element={<LoginForm />} />
+          <Route path='/register' element={<RegisterForm />} />
 
-        {/* Fallback otomatis jika pengguna mengetik URL asal */}
-        <Route path='*' element={<Navigate to='/' replace />} />
-      </Routes>
+          {/* === KELOMPOK 3: INTERNAL USER TERPROTEKSI (MENGGUNAKAN LAYOUT) === */}
+          <Route element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']} />}>
+            <Route element={<Layout />}>
+              <Route path='/' element={<LandingPage />} />
+              {/* Catatan: Duplikasi rute /profile di bawah telah dibersihkan agar mengarah ke UserProfilePage */}
+              <Route path='/profile' element={<UserProfilePage />} />
+              <Route path='/cart' element={<CartPage />} />
+              <Route path='/checkout' element={<CheckoutPage />} />
+            </Route>
+          </Route>
+
+          {/* === KELOMPOK 4: PANEL ADMIN TERPROTEKSI (MANDIRI / FULL SCREEN) === */}
+          <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+            <Route path='/admin/dashboard' element={<AdminDashboardPage />} />
+            <Route path='/admin/books/add' element={<AddBookPage />} />
+          </Route>
+
+          {/* Fallback otomatis jika pengguna mengetik URL asal */}
+          <Route path='*' element={<Navigate to='/' replace />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 };
