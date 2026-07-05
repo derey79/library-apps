@@ -2,11 +2,13 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 // 1. Definisi Interface untuk Data User & State
 export interface UserData {
-  id: string | number;
+  id: number;
   name: string;
   email: string;
   role: 'USER' | 'ADMIN';
-  avatarUrl?: string;
+  phone: string | null; // 💡 TAMBAHKAN BARIS INI
+  avatarUrl?: string | null;
+  createdAt?: string;
 }
 
 export interface AuthState {
@@ -54,41 +56,37 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    // Dipanggil saat mutasi login atau register di React Query sukses
-    loginSuccess: (
-      state,
-      action: PayloadAction<{ token: string; user: UserData }>
-    ) => {
-      const { token, user } = action.payload;
-
-      state.token = token;
-      state.user = user;
+    loginSuccess: (state, action) => {
       state.isAuthenticated = true;
-      state.isLoading = false;
-
-      // Persistensi ke penyimpanan lokal browser
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      state.token = action.payload.token;
+      state.user = action.payload.user;
+      localStorage.setItem('token', action.payload.token);
+      localStorage.setItem('user', JSON.stringify(action.payload.user));
     },
-
-    // Dipanggil saat user menekan tombol logout di Navbar
     logout: (state) => {
+      state.isAuthenticated = false;
       state.token = null;
       state.user = null;
-      state.isAuthenticated = false;
-      state.isLoading = false;
-
-      // Bersihkan penyimpanan lokal browser
       localStorage.removeItem('token');
       localStorage.removeItem('user');
     },
 
-    // Mengubah status loading state secara manual (jika diperlukan)
-    setAuthLoading: (state, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
+    // 💡 TAMBAHKAN REDUCER BARU INI UNTUK SINKRONISASI NAMA
+    updateUser: (
+      state,
+      action: PayloadAction<{ name: string; phone: string | null }>
+    ) => {
+      if (state.user) {
+        // Perbarui data di state global Redux
+        state.user.name = action.payload.name;
+        state.user.phone = action.payload.phone;
+
+        // Perbarui juga data di localStorage agar saat di-refresh tidak kembali ke nama lama
+        localStorage.setItem('user', JSON.stringify(state.user));
+      }
     },
   },
 });
 
-export const { loginSuccess, logout, setAuthLoading } = authSlice.actions;
+export const { loginSuccess, logout, updateUser } = authSlice.actions; // 💡 Ekspor aksinya
 export default authSlice.reducer;
