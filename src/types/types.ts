@@ -143,6 +143,18 @@ export interface ReviewPayload {
   content?: string;
 }
 
+export interface AdminLoansApiResponse {
+  data: {
+    loans: SharedLoanNode[];
+    pagination: {
+      totalItems: number;
+      totalPages: number;
+      currentPage: number;
+      limit: number;
+    };
+  };
+}
+
 // error
 export interface ApiErrorData {
   message?: string;
