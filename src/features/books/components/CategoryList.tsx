@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '@/api/axiosInstance';
-import { Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import CategoryCardSkeleton from '../book-grid/CategoryCardSkeleton';
 
 // icon from asset
 import fictionIcon from '@/assets/fiction.png';
@@ -84,11 +85,10 @@ export default function CategoryList({
 
   if (isLoading) {
     return (
-      <div className='flex flex-col items-center justify-center py-12 space-y-3 bg-zinc-900/10 rounded-2xl'>
-        <Loader2 className='h-6 w-6 text-blue-500 animate-spin' />
-        <p className='text-xs font-medium text-zinc-400'>
-          Syncing visualization parameters...
-        </p>
+      <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 w-full'>
+        {Array.from({ length: 6 }).map((_, index) => (
+          <CategoryCardSkeleton key={index} />
+        ))}
       </div>
     );
   }

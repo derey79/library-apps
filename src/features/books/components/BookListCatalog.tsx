@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '@/api/axiosInstance';
-import { Loader2, Inbox } from 'lucide-react';
-// 💡 1. IMPOR UTAMA: Panggil useSearchParams untuk membaca parameter pencarian URL Navbar
+import { Inbox } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 
 import BookFilterSidebar from '../book-grid/BookFilterSidebar';
 import BookItemCard, { CatalogBookNode } from '../book-grid/BookItemCard';
+import BookCardSkeleton from '../book-grid/BookCardSkeleton';
 
 interface BooksApiResponse {
   success: boolean;
@@ -23,7 +23,6 @@ interface BooksApiResponse {
 }
 
 export default function BookListCatalog() {
-  // 💡 2. AMBIL URL PARAMETER: Tangkap string kata kunci aktif yang dikirim dari NavLinks Navbar
   const [searchParams] = useSearchParams();
   const searchKeyword = searchParams.get('search')?.trim() || '';
 
@@ -31,11 +30,6 @@ export default function BookListCatalog() {
   const [rating, setRating] = useState<number | null>(null);
 
   const { data, isLoading, isError } = useQuery<BooksApiResponse>({
-    /* 
-      💡 3. SINKRONISASI QUERY KEY:
-      Masukkan searchKeyword ke dalam array dependensi queryKey. 
-      Jika user mengetik, TanStack Query otomatis mendeteksi perubahan dan langsung memicu penembakan API ulang!
-    */
     queryKey: ['publicCatalogBooks', category, rating, searchKeyword],
     queryFn: async () => {
       const response = await axiosInstance.get('/books', {
@@ -43,9 +37,8 @@ export default function BookListCatalog() {
           status: 'all',
           page: 1,
           limit: 50,
-          // 💡 4. PETAKAN PARAMETER BACKEND: Kirim kata kunci lewat properti 'q' murni ke backend Railway
+
           q: searchKeyword || undefined,
-          // Filter kategori & rating database pendukung sidebar kiri tetap menyatu
           category: category || undefined,
           rating: rating || undefined,
         },
@@ -56,7 +49,6 @@ export default function BookListCatalog() {
 
   const rawBooks = Array.isArray(data?.data?.books) ? data.data.books : [];
 
-  // Logika penapisan sekunder sisi klien agar performa sidebar filter tetap terasa responsif
   const booksList = rawBooks.filter((book) => {
     if (
       category &&
@@ -89,22 +81,18 @@ export default function BookListCatalog() {
 
         <div className='flex-1 w-full'>
           {isLoading ? (
-            /* KONDISI 1: DATA SEDANG DIMUAT */
-            <div className='flex flex-col items-center justify-center py-40 space-y-3 bg-white border border-neutral-100/60 rounded-[22px] shadow-sm w-full'>
-              <Loader2 className='h-7 w-7 text-blue-500 animate-spin' />
-              <p className='text-xs font-semibold text-neutral-400'>
-                Streaming catalog matrices...
-              </p>
+            <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 w-full'>
+              {Array.from({ length: 8 }).map((_, index) => (
+                <BookCardSkeleton key={index} />
+              ))}
             </div>
           ) : isError ? (
-            /* KONDISI 2: JALUR API TERPUTUS */
             <div className='p-12 text-center bg-red-500/5 border border-red-500/10 rounded-[22px] w-full'>
               <p className='text-xs font-semibold text-red-400'>
                 Failed to synchronize public library catalog index.
               </p>
             </div>
           ) : booksList.length === 0 ? (
-            /* KONDISI 3: HASIL FILTER / PENCARIAN KOSONG */
             <div className='p-20 text-center border border-dashed border-neutral-200 bg-neutral-50/40 rounded-[24px] flex flex-col items-center justify-center space-y-2 w-full'>
               <Inbox className='h-6 w-6 text-neutral-400' />
               <p className='text-sm text-neutral-800 font-bold'>
@@ -117,7 +105,6 @@ export default function BookListCatalog() {
               </p>
             </div>
           ) : (
-            /* KONDISI 4: DATA BERHASIL DIUNDUH (GRID REAKTIF) */
             <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 w-full'>
               {booksList.map((book) => (
                 <BookItemCard key={book.id} book={book} />
